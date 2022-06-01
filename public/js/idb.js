@@ -1,4 +1,5 @@
 let db;
+//open db
 const request = indexedDB.open('budget', 1);
 
 request.onupgradeneeded = (event) => {
@@ -10,7 +11,7 @@ request.onupgradeneeded = (event) => {
 
     })
 }
-
+// if success call offlinetransactions function
 request.onsuccess = (event) => {
     const db = event.target.result;
 
@@ -18,18 +19,18 @@ request.onsuccess = (event) => {
         offlineTransactions();
     }
 }
-
+// if error log it
 request.onerror = (err) => {
     console.log(err)
 }
-
+// function called in index.js to record into the offline db
 function saveRecord(record) {
     const trans = db.transaction('pending', 'readwrite')
     const store = trans.objectStore('pending')
     
     store.add(record)
 }
-
+//handle offline transacion
 function  offlineTransactions() {
     const trans = db.transaction('offlinetrans', 'readwrite')
     const store = trans.objectStore('offlinetrans')
@@ -57,5 +58,5 @@ function  offlineTransactions() {
         }
     }
 }
-
+// event listener for the window when being online
 window.addEventListener('online', offlineTransactions);

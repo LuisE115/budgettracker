@@ -1,6 +1,6 @@
 const CACHE_NAME = 'my-site-cache-v1';
 const DATA_CACHE_NAME = 'data-cache-v1';
-
+// files to cache
 const FILES_TO_CACHE = [
     '/',
     '/css/styles.css',
@@ -16,7 +16,7 @@ const FILES_TO_CACHE = [
     '/icons/icon-384x384.png',
     '/icons/icon-512x512.png'
   ];
-
+// cache all files_to_cache
   self.addEventListener('install', function(evt) {
       evt.waitUntil(
           caches.open(CACHE_NAME).then(cache => {
@@ -26,7 +26,7 @@ const FILES_TO_CACHE = [
       );
       self.skipWaiting();
   });
-
+// remove old cache data
   self.addEventListener('activate', function(evt) {
       evt.waitUntil(
           caches.keys().then(keyList => {
@@ -42,7 +42,7 @@ const FILES_TO_CACHE = [
       );
       self.clients.claim();
   });
-
+// fetch apis into serviceworkers
 self.addEventListener('fetch', function(evt) {
     if (evt.request.url.includes('/api/')) {
         evt.respondWith(

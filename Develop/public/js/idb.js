@@ -1,0 +1,61 @@
+let db;
+const request = indexedDB.open('budget', 1);
+
+request.onupgradeneeded = (event) => {
+    const db = event.target.result;
+
+    db.createObjectStore('offlinetrans', {
+        keyPath: 'id',
+        autoIncrement: true
+
+    })
+}
+
+request.onsuccess = (event) => {
+    const db = event.target.result;
+
+    if (navigator.online) {
+        offlineTransactions();
+    }
+}
+
+request.onerror = (err) => {
+    console.log(err)
+}
+
+function saveRecord(record) {
+    const trans = db.transaction('pending', 'readwrite')
+    const store = trans.objectStore('pending')
+    
+    store.add(record)
+}
+
+function  offlineTransactions() {
+    const trans = db.transaction('offlinetrans', 'readwrite')
+    const store = trans.objectStore('offlinetrans')
+
+    const getAll = store.getAll();
+
+    getRecords.onsuccess = () => {
+        if (getAll.result.length > 0) {
+            fetch('api/transaction', {
+                method: 'POST',
+                body: JSON.stringify(getAll.result),
+                headers: {
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                response.json()
+            })
+            .then(() => {
+                const trans = db.transaction('offlinetrans', 'readwrite')
+                const store = trans.objectStore('offlinetrans')
+                store.clear();
+            })
+        }
+    }
+}
+
+window.addEventListener('online', offlineTransactions);

@@ -1,8 +1,3 @@
-if ('serviceworker' in navigator) {
-  navigator.serviceWorker
-      .register('./service')
-}
-
 let transactions = [];
 let myChart;
 
